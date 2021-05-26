@@ -4,8 +4,7 @@ window.onload = function () {
   // let mesh;
 
   // 几何体
-  const geometry = new THREE.SphereGeometry(100, 25, 25);
-  geometry.scale(3, 3, 3);
+  var geometry = new THREE.PlaneGeometry(204, 102, 4, 4);
 
   const textureLoader = new THREE.TextureLoader();
 
@@ -13,6 +12,12 @@ window.onload = function () {
     const material = new THREE.MeshLambertMaterial({ map: texture });
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
+    const uvs = new Float32Array([0, 1, 1, 1, 0, 0, 1, 0]);
+
+    console.log(geometry.attributes.uv);
+    console.log(new THREE.BufferAttribute(uvs, 2));
+    geometry.attributes.uv = new THREE.BufferAttribute(uvs, 2);
+
     render();
   });
 
