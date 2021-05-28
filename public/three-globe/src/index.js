@@ -14,12 +14,8 @@ window.onload = () => {
 async function loadImageData() {
   const textureLoader = new THREE.TextureLoader();
   try {
-    return new Promise((resolve, reject) => {
-      textureLoader.load("assets/map.png", (imageData) => {
-        // const canvas = document.createElement("canvas");
-        // const context = canvas.getContext("2d");
-        // context.drawImage(image, 0, 0, image.width, image.height);
-        // const imageData = context.getImageData(0, 0, image.width, image.height);
+    return new Promise((resolve) => {
+      textureLoader.load("assets/images/map.png", (imageData) => {
         resolve(imageData.image);
       });
     });

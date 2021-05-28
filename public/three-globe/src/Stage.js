@@ -1,3 +1,4 @@
+import { MouseEvent } from "../utils/MouseEvent.js";
 import { Atmosphere } from "./Atmosphere.js";
 import { Earth } from "./Earth.js";
 import { Polygon } from "./Polygon.js";
@@ -10,6 +11,11 @@ export class Stage {
     this.image = image;
     this.init();
     this.initScene();
+    this.controls = new MouseEvent({
+      domElement: this.renderer.domElement,
+      object: this.container,
+      objectContainer: this.rootContainer,
+    });
   }
 
   init() {
@@ -97,7 +103,7 @@ export class Stage {
     this.rootContainer.scale.set(t, t, t);
     this.rootContainer.position.set(0, 0, 0);
     this.atmosphereContainer.scale.set(t, t, t);
-    this.atmosphereContainer.position.set(0, 0, -11);
+    this.atmosphereContainer.position.set(0, 0, -13);
   }
 
   autoLight(t) {
@@ -120,6 +126,9 @@ export class Stage {
   }
 
   autoUpdate() {
+    if (this.controls && this.controls.update()) {
+      return this.render();
+    }
     this.render();
     requestAnimationFrame(this.autoUpdate);
   }
