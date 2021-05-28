@@ -1,16 +1,33 @@
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+const width = 800,
+  height = 600;
+const renderer = new THREE.WebGLRenderer({
+  powerPreference: "high-performance",
+  alpha: true,
+  preserveDrawingBuffer: !1,
+});
+renderer.setPixelRatio(1);
+renderer.setSize(width, height);
+renderer.setClearColor(265505, 1);
 document.getElementById("globeViz").appendChild(renderer.domElement);
 
 const radius = 25;
 
 const scene = new THREE.Scene();
 
-const geometry = new THREE.SphereGeometry(100, 50, 50);
+const parentContainer = new THREE.Group();
+parentContainer.name = "parentContainer";
+const hl = new THREE.Euler(0.3, 4.6, 0.05);
+let r = hl;
+const s = new Date().getTimezoneOffset() || 0;
+r.y = hl.y + Math.PI * (s / 720);
+console.log(r);
+parentContainer.rotation.copy(r);
+scene.add(parentContainer);
 
-const material = new THREE.ShaderMaterial({
-  uniforms: {},
-  color: 857395,
+const geometry = new THREE.SphereBufferGeometry(radius, 50, 50);
+
+const material = new THREE.MeshStandardMaterial({
+  color: 1513012,
   metalness: 0,
   roughness: 0.9,
 });
@@ -223,36 +240,48 @@ material.onBeforeCompile = (t) => {
       #include <premultiplied_alpha_fragment>
       #include <dithering_fragment>
   }`;
-  material.defines = {
-    USE_HIGHLIGHT: 1,
-    USE_HIGHLIGHT_ALT: 1,
-    USE_FRONT_HIGHLIGHT: 1,
-    DITHERING: 1,
-  };
+  // material.defines = {
+  //   USE_HIGHLIGHT: 1,
+  //   USE_HIGHLIGHT_ALT: 1,
+  //   USE_FRONT_HIGHLIGHT: 1,
+  //   DITHERING: 1,
+  // };
 };
 
 const globe = new THREE.Mesh(geometry, material);
+// globe.renderOrder = 1;
 // const globe = new ThreeGlobe()
 //   .globeImageUrl("images/earth-night.jpg")
 //   .bumpImageUrl("images/earth-topology.jpg")
 //   .showAtmosphere(true);
-scene.add(globe);
+parentContainer.add(globe);
 
-scene.add(new THREE.AmbientLight(0xbbbbbb));
-scene.add(new THREE.DirectionalLight(0xffffff, 0.6));
+const i = new THREE.AmbientLight(16777215, 0.8);
+scene.add(i);
+const light0 = new THREE.SpotLight(2197759, 12, 120, 0.3, 0, 1.1);
+const light1 = new THREE.DirectionalLight(11124735, 3);
+const light3 = new THREE.SpotLight(16018366, 5, 75, 0.5, 0, 1.25);
+light0.target = parentContainer;
+light1.target = parentContainer;
+light3.target = parentContainer;
+scene.add(light0, light1, light3);
 
-const camera = new THREE.PerspectiveCamera();
-camera.aspect = window.innerWidth / window.innerHeight;
-camera.updateProjectionMatrix();
-camera.position.z = 500;
+// scene.add(new THREE.AmbientLight(0xbbbbbb));
+// scene.add(new THREE.DirectionalLight(0xffffff, 0.6));
 
-const tbControls = new THREE.TrackballControls(camera, renderer.domElement);
-tbControls.minDistance = 101;
-tbControls.rotateSpeed = 5;
-tbControls.zoomSpeed = 0.8;
+const camera = new THREE.PerspectiveCamera(20, width / height, 170, 2000);
+camera.position.set(0, 0, 220);
+scene.add(camera);
 
-(function animate() {
-  tbControls.update();
-  renderer.render(scene, camera);
-  requestAnimationFrame(animate);
-})();
+renderer.render(scene, camera);
+
+// const tbControls = new THREE.TrackballControls(camera, renderer.domElement);
+// tbControls.minDistance = 101;
+// tbControls.rotateSpeed = 5;
+// tbControls.zoomSpeed = 0.8;
+
+// (function animate() {
+//   tbControls.update();
+//   renderer.render(scene, camera);
+//   requestAnimationFrame(animate);
+// })();
