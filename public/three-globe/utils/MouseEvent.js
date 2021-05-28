@@ -1,3 +1,5 @@
+import { RotateMatrix } from "../src/Tool3d.js";
+
 export class MouseEvent {
   constructor(props) {
     this.props = props;
@@ -12,6 +14,8 @@ export class MouseEvent {
     this.dragging = false;
     this.mouse = new THREE.Vector2(0, 0);
     this.prevMouse = new THREE.Vector2(0, 0);
+    this.target = new THREE.Vector2(0, 0);
+    this.matrix = new THREE.Matrix4();
     this.addListeners();
   }
 
@@ -25,8 +29,9 @@ export class MouseEvent {
   }
 
   setMouse(e) {
-    this.mouse.x = e.clientX;
-    this.mouse.y = e.clientY;
+    const { innerWidth, innerHeight } = window;
+    this.mouse.x = (e.clientX / innerWidth) * 2 - 1;
+    this.mouse.y = 1 - (e.clientY / innerHeight) * 2;
   }
 
   setDragging(flag) {
@@ -51,14 +56,31 @@ export class MouseEvent {
     this.setDragging(false);
   }
 
-  update() {
-    const { object, objectContainer } = this.props;
-    let moveX, moveY;
+  update(delta) {
+    const {
+      object,
+      objectContainer,
+      easing,
+      maxRotationX,
+      rotateSpeed,
+      autoRotateSpeed,
+    } = this.props;
+    let moveX = 0,
+      moveY = 0;
     if (this.dragging) {
       moveX = this.mouse.x - this.prevMouse.x;
       moveY = this.mouse.y - this.prevMouse.y;
-      objectContainer.rotation.y += moveX * 0.01;
-      objectContainer.rotation.x += moveY * 0.01;
+      this.target.y = Math.max(
+        -maxRotationX,
+        Math.min(0.6 * maxRotationX, this.target.y - moveY)
+      );
+    }
+    this.target.x += (moveX - this.target.x) * easing;
+    objectContainer.rotation.x +=
+      (this.target.y + 0.3 - objectContainer.rotation.x) * easing;
+    RotateMatrix(object, this.target.x * rotateSpeed, this.matrix);
+    if (!this.dragging) {
+      RotateMatrix(object, delta * autoRotateSpeed, this.matrix);
     }
     this.prevMouse.copy(this.mouse);
   }

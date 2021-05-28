@@ -9,3 +9,12 @@ export const SphereVector3 = function (long, lat, radius) {
   );
   return vector;
 };
+
+export const RotateMatrix = function (object, rotation, matrix) {
+  const m = matrix || new THREE.Matrix4();
+  m.identity();
+  m.makeRotationY(rotation);
+  m.multiply(object.matrix);
+  object.matrix.copy(m);
+  object.rotation.setFromRotationMatrix(object.matrix);
+};

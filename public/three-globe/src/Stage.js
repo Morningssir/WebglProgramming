@@ -7,14 +7,19 @@ export class Stage {
   constructor(props) {
     const { image } = props;
     this.autoUpdate = this.autoUpdate.bind(this);
-    this.radius = 25;
+    this.clock = new THREE.Clock();
     this.image = image;
+    this.radius = 25;
     this.init();
     this.initScene();
     this.controls = new MouseEvent({
       domElement: this.renderer.domElement,
       object: this.container,
       objectContainer: this.rootContainer,
+      rotateSpeed: 3,
+      autoRotateSpeed: 0.1,
+      maxRotationX: 0.5,
+      easing: 0.1,
     });
   }
 
@@ -126,7 +131,9 @@ export class Stage {
   }
 
   autoUpdate() {
-    if (this.controls && this.controls.update()) {
+    const delta = this.clock.getDelta();
+
+    if (this.controls && this.controls.update(delta)) {
       return this.render();
     }
     this.render();
