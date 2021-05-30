@@ -1,13 +1,13 @@
-export const SphereVector3 = function (long, lat, radius) {
-  const vector = new THREE.Vector3();
+export const SphereVector3 = function (long, lat, radius, vector) {
+  const vec3 = vector || new THREE.Vector3();
   const alpha = ((90 - lat) * Math.PI) / 180;
   const beta = ((180 + long) * Math.PI) / 180;
-  vector.set(
+  vec3.set(
     -radius * Math.sin(alpha) * Math.cos(beta),
     radius * Math.cos(alpha),
     radius * Math.sin(alpha) * Math.sin(beta)
   );
-  return vector;
+  return vec3;
 };
 
 export const RotateMatrix = function (object, rotation, matrix) {

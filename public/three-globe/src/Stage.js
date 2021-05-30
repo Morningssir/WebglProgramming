@@ -2,6 +2,7 @@ import { MouseEvent } from "../utils/MouseEvent.js";
 import { Atmosphere } from "./Atmosphere.js";
 import { Earth } from "./Earth.js";
 import { Polygon } from "./Polygon.js";
+import { Beam } from "./Beam.js";
 
 export class Stage {
   constructor(props) {
@@ -85,6 +86,7 @@ export class Stage {
     this.atmosphereContainer.add(atmosphere);
 
     this.initPolygon();
+    this.initObjects();
   }
 
   initPolygon() {
@@ -93,6 +95,27 @@ export class Stage {
       image: this.image,
     });
     this.container.add(polygon);
+  }
+
+  initObjects() {
+    const dataSource = Mock.mock({
+      "list|50": [
+        {
+          id: /\d{10}/,
+          name: "@city",
+          "longitude|-180-180.2": 1,
+          "latitude|-90-90.2": 1,
+        },
+      ],
+    });
+    const Beams = new Beam({
+      camera: this.camera,
+      maxSize: dataSource.list.length,
+      dataSource: dataSource.list,
+      radius: this.radius,
+      colors: { lineColor: 2197759, particleColor: 6137337 },
+    });
+    this.container.add(Beams);
   }
 
   autoResize() {
